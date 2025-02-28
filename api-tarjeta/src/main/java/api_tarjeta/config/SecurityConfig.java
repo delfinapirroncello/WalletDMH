@@ -1,7 +1,5 @@
 package api_tarjeta.config;
 
-import api_tarjeta.JwtAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,6 +23,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/usuarios/**").authenticated()
                         .requestMatchers("/api/cuentas/**").authenticated()
                         .requestMatchers("/api/tarjetas/**").authenticated()
                         .requestMatchers("/api/transacciones/**").authenticated()

@@ -1,4 +1,4 @@
-package api_tarjeta;
+package com.microservices.cuenta_service.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -30,16 +30,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
+        System.out.println("Token recibido en cuenta-service: " + authHeader);
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             try {
                 Key secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+
+
                 Claims claims = Jwts.parserBuilder()
                         .setSigningKey(secretKey)
                         .build()
                         .parseClaimsJws(token)
                         .getBody();
+
+                System.out.println("Token válido para usuario: " + claims.getSubject());
+                System.out.println("Contenido del token: " + claims);
 
                 String username = claims.getSubject();
 
@@ -50,12 +56,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (Exception e) {
+                System.out.println("Error al validar el token: " + e.getMessage());
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Token inválido: " + e.getMessage());
                 return;
             }
+        } else {
+            System.out.println("No se encontró token en la solicitud.");
         }
 
         filterChain.doFilter(request, response);
     }
-}
+
+} 

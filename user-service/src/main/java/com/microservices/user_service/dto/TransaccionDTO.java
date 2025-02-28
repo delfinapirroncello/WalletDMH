@@ -1,6 +1,6 @@
 package com.microservices.user_service.dto;
 
-import com.microservices.user_service.TipoTransaccion;
+import com.microservices.user_service.enums.TipoTransaccion;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 

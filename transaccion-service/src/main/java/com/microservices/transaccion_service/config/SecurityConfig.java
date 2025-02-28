@@ -28,8 +28,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/usuarios/**").authenticated()
-                        .requestMatchers("/api/auth/**").authenticated()
                         .requestMatchers("/api/tarjetas/**").authenticated()
                         .requestMatchers("/api/cuentas/**").authenticated()
                         .requestMatchers("/api/transacciones/**").authenticated()

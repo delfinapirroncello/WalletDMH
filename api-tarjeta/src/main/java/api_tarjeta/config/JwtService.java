@@ -1,11 +1,9 @@
-package api_tarjeta.service;
+package api_tarjeta.config;
 
 import api_tarjeta.dto.AuthResponse;
-import api_tarjeta.client.UsuarioClient;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +18,6 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long expiration;
 
-    @Autowired
-    private UsuarioClient authClient;
-    private AuthRequest authRequest;
     private AuthResponse authResponse;
 
 

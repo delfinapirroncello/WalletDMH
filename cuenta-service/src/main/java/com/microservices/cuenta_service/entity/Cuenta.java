@@ -36,7 +36,6 @@ public class Cuenta {
     @Transient
     private List<TarjetaResponse> tarjetas;
 
-
     public Cuenta() {}
 
     public Cuenta(Long id, String nombreYApellido, String cvu, String alias, BigDecimal saldoDisponible, String tipoCuenta, String numeroCuenta, String telefono, Long usuarioId, List<Long> transaccionIds, List<TarjetaResponse> tarjetas) {

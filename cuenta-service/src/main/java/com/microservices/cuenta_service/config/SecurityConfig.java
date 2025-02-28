@@ -1,7 +1,5 @@
 package com.microservices.cuenta_service.config;
 
-import com.microservices.cuenta_service.JwtAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,18 +17,16 @@ public class SecurityConfig {
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Deshabilita la protección CSRF
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
-
-                        .requestMatchers("/api/usuarios/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/tarjetas/**").permitAll()
-                        .requestMatchers("/api/cuentas/**").permitAll()
-                        .requestMatchers("/api/transacciones/**").permitAll()
+                        .requestMatchers("/api/usuarios/**").authenticated()
+                        .requestMatchers("/api/tarjetas/**").authenticated()
+                        .requestMatchers("/api/cuentas/**").authenticated()
+                        .requestMatchers("/api/transacciones/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

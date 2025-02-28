@@ -1,4 +1,4 @@
-package com.microservices.cuenta_service;
+package com.microservices.cuenta_service.config;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;

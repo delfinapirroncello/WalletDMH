@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
+@Deprecated
 @FeignClient(name = "transaccion-service")
 public interface TransaccionClient {
-
     @GetMapping("/api/transacciones/usuario/{userId}")
     List<TransaccionDTO> getTransaccionesPorUsuario(@PathVariable("userId") Long userId);
 }

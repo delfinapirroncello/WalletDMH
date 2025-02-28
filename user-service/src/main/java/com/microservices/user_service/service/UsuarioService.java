@@ -19,6 +19,6 @@ import java.util.Optional;
 
         public Optional<Usuario> obtenerUsuarioPorEmail(String email);
 
-        public List<TransaccionDTO> obtenerActividadUsuario(Long userId);
+       /* public List<TransaccionDTO> obtenerActividadUsuario(Long userId);*/
 
     }

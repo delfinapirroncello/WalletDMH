@@ -71,20 +71,6 @@ public class TransaccionController {
     }
 
 
-    public Transaccion guardarTransaccion(Transaccion transaccion) {
-        String url = "http://cuenta-service/api/cuentas/" + transaccion.getCuentaId();
-        ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
-
-        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
-            throw new RuntimeException("Cuenta no encontrada");
-        }
-
-        Map<String, Object> cuentaData = response.getBody();
-        System.out.println("Cuenta encontrada: " + cuentaData);
-
-        return transaccionRepository.save(transaccion);
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarTransaccion(@PathVariable Long id) {
         transaccionService.eliminarTransaccion(id);
@@ -164,7 +150,6 @@ public class TransaccionController {
                                             @RequestBody IngresoDTO ingresoDTO,
                                             @RequestHeader("Authorization") String token) {
         try {
-            // 🔹 Validar la tarjeta
             List<TarjetaDTO> tarjetas = tarjetaClient.obtenerTarjetas(token);
             boolean tarjetaValida = tarjetas.stream()
                     .anyMatch(t -> t.getId().equals(ingresoDTO.getTarjetaId()));
@@ -208,13 +193,14 @@ public class TransaccionController {
     //http://localhost:8082/api/transacciones/cuentas/51/transferir?identificadorDestino=luz.luz.carne&cantidad=100
     @PostMapping("/cuentas/{id}/transferir")
     public ResponseEntity<?> transferirDinero(
-            @PathVariable Long id,
-            @RequestParam String identificadorDestino,
+            @PathVariable Long id, // ID de la cuenta origen
+            @RequestParam String identificadorDestino, // Identificador de la cuenta destino (por ejemplo, alias o cvu)
             @RequestParam BigDecimal cantidad,
             @RequestHeader("Authorization") String token) {
         try {
             System.out.println("Token recibido: " + token);
 
+            // 1. Obtener la cuenta destino usando su identificador
             CuentaDTO cuentaDestino = cuentaClient.obtenerCuentaPorIdentificador(identificadorDestino, token);
             if (cuentaDestino == null) {
                 System.out.println("Cuenta de destino no encontrada");
@@ -222,6 +208,7 @@ public class TransaccionController {
                         .body(new ApiResponse("Cuenta de destino no encontrada", false, null));
             }
 
+            // 2. Obtener la cuenta origen
             CuentaDTO cuentaOrigen = cuentaClient.obtenerCuenta(id, token);
             if (cuentaOrigen == null) {
                 System.out.println("Cuenta de origen no encontrada");
@@ -229,24 +216,58 @@ public class TransaccionController {
                         .body(new ApiResponse("Cuenta de origen no encontrada", false, null));
             }
 
+            // 3. Verificar fondos suficientes en la cuenta origen
             if (cuentaOrigen.getSaldoDisponible().compareTo(cantidad) < 0) {
-                return ResponseEntity.status(HttpStatus.GONE)
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ApiResponse("Fondos insuficientes", false, null));
             }
 
-            System.out.println("Transferencia validada correctamente");
+            // 4. Actualizar saldos:
+            // Restar el monto de la cuenta origen
+            BigDecimal nuevoSaldoOrigen = cuentaOrigen.getSaldoDisponible().subtract(cantidad);
+            cuentaOrigen.setSaldoDisponible(nuevoSaldoOrigen);
+            cuentaClient.actualizarCuenta(id, cuentaOrigen, token);
+
+            // Sumar el monto a la cuenta destino
+            BigDecimal nuevoSaldoDestino = cuentaDestino.getSaldoDisponible().add(cantidad);
+            cuentaDestino.setSaldoDisponible(nuevoSaldoDestino);
+            cuentaClient.actualizarCuenta(cuentaDestino.getId(), cuentaDestino, token);
+
+            // 5. Registrar la transacción de egreso en la cuenta origen
+            Transaccion egreso = new Transaccion();
+            egreso.setCuentaId(id);
+            egreso.setCantidad(cantidad);
+            egreso.setDescripcion("Transferencia enviada a " + identificadorDestino);
+            egreso.setTipo(TipoTransaccion.EGRESO);
+            egreso.setFecha(LocalDateTime.now());
+            transaccionRepository.save(egreso);
+
+            // 6. Registrar la transacción de ingreso en la cuenta destino
+            Transaccion ingreso = new Transaccion();
+            ingreso.setCuentaId(cuentaDestino.getId());
+            ingreso.setCantidad(cantidad);
+            ingreso.setDescripcion("Transferencia recibida de la cuenta " + id);
+            ingreso.setTipo(TipoTransaccion.INGRESO);
+            ingreso.setFecha(LocalDateTime.now());
+            transaccionRepository.save(ingreso);
+
+            // 7. Preparar respuesta con ambas transacciones
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("mensaje", "Transferencia realizada con éxito");
+            respuesta.put("transaccionEgreso", egreso);
+            respuesta.put("transaccionIngreso", ingreso);
 
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new ApiResponse("Transferencia realizada con éxito", true, null));
+                    .body(new ApiResponse("Transferencia realizada con éxito", true, respuesta));
 
         } catch (FeignException e) {
-            System.out.println("Error en comunicación con otros servicios");
+            System.out.println("Error en comunicación con otros servicios: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                     .body(new ApiResponse("Error en la comunicación con otros servicios", false, null));
         } catch (Exception e) {
             System.out.println("Error inesperado: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("Error al procesar la solicitud", false, null));
+                    .body(new ApiResponse("Error al procesar la solicitud: " + e.getMessage(), false, null));
         }
     }
 
@@ -296,6 +317,5 @@ public class TransaccionController {
                     .body(new ApiResponse("Error al procesar la solicitud.", false, null));
         }
     }
-
 
 }

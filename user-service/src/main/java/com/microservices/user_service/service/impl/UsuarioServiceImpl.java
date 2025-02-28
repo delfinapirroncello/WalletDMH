@@ -4,14 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microservices.user_service.client.TarjetaClient;
 import com.microservices.user_service.client.TransaccionClient;
-import com.microservices.user_service.dto.TarjetaDTO;
 import com.microservices.user_service.dto.TransaccionDTO;
 import com.microservices.user_service.entity.Usuario;
 import com.microservices.user_service.repository.UsuarioRepository;
 import com.microservices.user_service.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -28,6 +25,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     private static final String JSON_FILE_PATH = "usuarios.json";
     private final Map<Long, Usuario> usuarios = new HashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private TransaccionClient transaccionClient;
 
     public UsuarioServiceImpl() {
         cargarUsuariosJson();
@@ -35,8 +33,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private TarjetaClient tarjetaClient;
-    @Autowired
-    private TransaccionClient transaccionClient;
 
     @Override
     public List<Usuario> obtenerTodosLosUsuarios() {
@@ -123,9 +119,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.findByEmail(email);
     }
 
-    public List<TransaccionDTO> obtenerActividadUsuario(Long userId) {
+    /*public List<TransaccionDTO> obtenerActividadUsuario(Long userId) {
         return transaccionClient.getTransaccionesPorUsuario(userId);
-    }
+    }*/
 
 }
 

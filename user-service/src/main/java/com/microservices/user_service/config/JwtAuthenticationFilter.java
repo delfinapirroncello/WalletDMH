@@ -1,6 +1,6 @@
-package com.microservices.user_service;
+package com.microservices.user_service.config;
 
-import com.microservices.user_service.service.JwtService;
+import com.microservices.user_service.config.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(name = "api-tarjeta", url = "http://localhost:8083/api/tarjetas")
+@FeignClient(name = "api-tarjetas")
 public interface TarjetaClient {
     @GetMapping("/{userId}")
     List<TarjetaDTO> getCardsByUserId(@PathVariable("userId") Long userId);

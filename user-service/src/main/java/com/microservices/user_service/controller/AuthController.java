@@ -1,10 +1,7 @@
 package com.microservices.user_service.controller;
 
 import com.microservices.user_service.dto.ApiResponse;
-import com.microservices.user_service.entity.Usuario;
 import com.microservices.user_service.service.AuthService;
-import com.microservices.user_service.service.JwtService;
-import com.microservices.user_service.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {

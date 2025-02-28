@@ -1,9 +1,9 @@
 package com.microservices.user_service.service.impl;
 
 import com.microservices.user_service.service.AuthService;
-import com.microservices.user_service.service.JwtService;
+import com.microservices.user_service.config.JwtService;
 import com.microservices.user_service.entity.Usuario;
-import com.microservices.user_service.service.JwtTokenBlacklist;
+import com.microservices.user_service.config.JwtTokenBlacklist;
 import com.microservices.user_service.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -135,21 +135,7 @@ public class UsuarioController {
         return ResponseEntity.ok(new ApiResponse("Lista de usuarios", true, usuariosDTO));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse> eliminarUsuario(@PathVariable Long id) {
-        try {
-            usuarioService.eliminarUsuario(id);
-            return ResponseEntity.ok(new ApiResponse("Usuario eliminado exitosamente", true, null));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiResponse("Usuario no encontrado: " + e.getMessage(), false, null));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("Error al eliminar el usuario: " + e.getMessage(), false, null));
-        }
-    }
-
-    @GetMapping("/{id}/actividad")
+   /* @GetMapping("/{id}/actividad")
     public ResponseEntity<?> obtenerActividadUsuario(@PathVariable Long id) {
         try {
             List<TransaccionDTO> transacciones = usuarioService.obtenerActividadUsuario(id);
@@ -164,7 +150,7 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al obtener la actividad del usuario: " + e.getMessage());
         }
-    }
+    }*/
 
 
 }

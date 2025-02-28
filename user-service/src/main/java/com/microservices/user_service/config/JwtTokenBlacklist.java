@@ -1,4 +1,4 @@
-package com.microservices.user_service.service;
+package com.microservices.user_service.config;
 
 import org.springframework.stereotype.Component;
 
