@@ -1,6 +1,6 @@
 package com.microservices.transaccion_service.dto;
 
-import com.microservices.transaccion_service.TipoTransaccion;
+import com.microservices.transaccion_service.enums.TipoTransaccion;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
@@ -31,19 +31,15 @@ public class TransaccionDTO {
     public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
     }
-
     public Long getTransaccionId() {
         return transaccionId;
     }
-
     public void setTransaccionId(Long transaccionId) {
         this.transaccionId = transaccionId;
     }
-
     public Long getCuentaId() {
         return cuentaId;
     }
-
     public void setCuentaId(Long cuentaId) {
         this.cuentaId = cuentaId;
     }
@@ -54,19 +50,15 @@ public class TransaccionDTO {
     public void setCantidad(BigDecimal cantidad) {
         this.cantidad = cantidad;
     }
-
     public String getDescripcion() {
         return descripcion;
     }
-
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-
     public TipoTransaccion getTipo() {
         return tipo;
     }
-
     public void setTipo(TipoTransaccion tipo) {
         this.tipo = tipo;
     }

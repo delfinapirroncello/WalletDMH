@@ -9,7 +9,6 @@ public class TarjetaDTO {
     private String numeroTarjeta;
     private String nombreYApellido;
     private Long cuentaId;
-
     private Long id;
     private String fechaExpiracion;
 

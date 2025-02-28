@@ -14,7 +14,6 @@ public class FeignClientInterceptor {
     public RequestInterceptor requestInterceptor() {
         return requestTemplate -> {
             String token = getToken();
-            System.out.println("🔹 Enviando token en Feign: " + token); // <-- Agregar este log
             if (token != null) {
                 requestTemplate.header("Authorization", "Bearer " + token);
             }

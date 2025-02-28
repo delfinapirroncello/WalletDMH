@@ -30,19 +30,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String token = extractToken(request);
-        System.out.println("🔹 Token recibido en JwtAuthenticationFilter: " + token);
+        System.out.println("Token recibido en JwtAuthenticationFilter: " + token);
 
         if (token != null) {
             Claims claims = validateToken(token);
             if (claims != null) {
-                String userId = claims.getSubject(); // Obtener el usuario (ID)
+                String userId = claims.getSubject();
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userId, token, Collections.emptyList());
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                System.out.println("🔹 Authentication después de setAuthentication: " + SecurityContextHolder.getContext().getAuthentication());
             }
         }
 
@@ -66,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
-            System.out.println("❌ Token inválido: " + e.getMessage());
+            System.out.println("Token inválido: " + e.getMessage());
             return null;
         }
     }

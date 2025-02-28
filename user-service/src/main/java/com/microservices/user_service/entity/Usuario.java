@@ -20,6 +20,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
 @Table(name = "usuario", schema = "usuarios")
 public class Usuario {
     @Id

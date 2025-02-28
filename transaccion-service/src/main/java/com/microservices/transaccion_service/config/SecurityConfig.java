@@ -28,11 +28,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/usuarios/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/tarjetas/**").permitAll()
-                        .requestMatchers("/api/cuentas/**").permitAll()
-                        .requestMatchers("/api/transacciones/**").permitAll()
+                        .requestMatchers("/api/usuarios/**").authenticated()
+                        .requestMatchers("/api/auth/**").authenticated()
+                        .requestMatchers("/api/tarjetas/**").authenticated()
+                        .requestMatchers("/api/cuentas/**").authenticated()
+                        .requestMatchers("/api/transacciones/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

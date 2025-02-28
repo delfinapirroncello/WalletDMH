@@ -20,7 +20,6 @@ public class ConfigController {
 
     @PostMapping("/config")
     public Map<String, String> getConfig(@RequestBody Map<String, String> configuraciones) {
-        // Se pueden recibir configuraciones dinámicas y devolverlas
-        return configuraciones;  // Devuelve las configuraciones recibidas para verlas en la respuesta
+        return configuraciones;
     }
 }

@@ -1,6 +1,7 @@
 package com.microservices.transaccion_service.entity;
 
-import com.microservices.transaccion_service.TipoTransaccion;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.microservices.transaccion_service.enums.TipoTransaccion;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ public class Transaccion {
     @Enumerated(EnumType.STRING)
     private TipoTransaccion tipo;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime fecha;
 
     public Transaccion() {

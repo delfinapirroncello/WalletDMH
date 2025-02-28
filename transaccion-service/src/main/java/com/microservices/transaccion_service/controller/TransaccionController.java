@@ -1,6 +1,6 @@
 package com.microservices.transaccion_service.controller;
 
-import com.microservices.transaccion_service.TipoTransaccion;
+import com.microservices.transaccion_service.enums.TipoTransaccion;
 import com.microservices.transaccion_service.client.CuentaClient;
 import com.microservices.transaccion_service.client.TarjetaClient;
 import com.microservices.transaccion_service.dto.*;
@@ -66,7 +66,7 @@ public class TransaccionController {
             @RequestBody TransaccionDTO transaccionDTO,
             @RequestHeader(name = "Authorization", required = true) String token) {
 
-        System.out.println("🔹 Token recibido en api-transacciones: " + token);
+        System.out.println("Token recibido en api-transacciones: " + token);
         return transaccionService.crearTransaccion(cuentaId, transaccionDTO, token);
     }
 
@@ -96,21 +96,19 @@ public class TransaccionController {
         List<TransaccionDTO> transacciones = transaccionService.obtenerTransaccionesPorCuenta(id);
         return ResponseEntity.ok(transacciones);
     }
+
     @GetMapping("/cuenta/{id}/ultimos")
     public ResponseEntity<?> obtenerUltimosMovimientos(@PathVariable Long id, @RequestHeader("Authorization") String token) {
         try {
-            // 🔹 Obtener la cuenta desde cuenta-service para validar que existe
             CuentaDTO cuenta = cuentaClient.obtenerCuenta(id, token);
             if (cuenta == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ApiResponse("Cuenta no encontrada", false, null));
             }
 
-            // 🔹 Obtener los últimos 5 movimientos de la cuenta
             List<Transaccion> ultimasTransacciones = transaccionRepository
                     .findTop5ByCuentaIdOrderByFechaDesc(id);
 
-            // 🔹 Construir la respuesta con saldo y transacciones
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("saldoDisponible", cuenta.getSaldoDisponible());
             respuesta.put("ultimasTransacciones", ultimasTransacciones);
@@ -132,14 +130,12 @@ public class TransaccionController {
             @RequestHeader("Authorization") String token) {
 
         try {
-            // 🔹 Obtener la cuenta para validar permisos
             CuentaDTO cuenta = cuentaClient.obtenerCuenta(cuentaId, token);
             if (cuenta == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ApiResponse("Cuenta no encontrada", false, null));
             }
 
-            // 🔹 Buscar la transacción en la base de datos
             Optional<Transaccion> transaccionOpt = transaccionRepository.findById(transferenciaId);
             if (transaccionOpt.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -148,7 +144,6 @@ public class TransaccionController {
 
             Transaccion transaccion = transaccionOpt.get();
 
-            // 🔹 Verificar que la transacción pertenece a la cuenta consultada
             if (!transaccion.getCuentaId().equals(cuentaId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(new ApiResponse("No tienes permisos para ver esta actividad.", false, null));
@@ -179,14 +174,12 @@ public class TransaccionController {
                         .body(new ApiResponse("Tarjeta no válida o no encontrada.", false, null));
             }
 
-            // 🔹 Obtener la cuenta del usuario
             CuentaDTO cuenta = cuentaClient.obtenerCuenta(id, token);
             if (cuenta == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ApiResponse("Cuenta no encontrada", false, null));
             }
 
-            // 🔹 Crear la transacción de ingreso
             Transaccion transaccion = new Transaccion();
             transaccion.setCuentaId(id);
             transaccion.setCantidad(ingresoDTO.getCantidad());
@@ -196,7 +189,6 @@ public class TransaccionController {
 
             transaccionRepository.save(transaccion);
 
-            // 🔹 Actualizar saldo de la cuenta
             BigDecimal nuevoSaldo = cuenta.getSaldoDisponible().add(ingresoDTO.getCantidad());
             cuenta.setSaldoDisponible(nuevoSaldo);
             cuentaClient.actualizarCuenta(id, cuenta, token);
@@ -212,6 +204,8 @@ public class TransaccionController {
                     .body(new ApiResponse("Error al procesar la solicitud.", false, null));
         }
     }
+
+    //http://localhost:8082/api/transacciones/cuentas/51/transferir?identificadorDestino=luz.luz.carne&cantidad=100
     @PostMapping("/cuentas/{id}/transferir")
     public ResponseEntity<?> transferirDinero(
             @PathVariable Long id,
@@ -219,43 +213,38 @@ public class TransaccionController {
             @RequestParam BigDecimal cantidad,
             @RequestHeader("Authorization") String token) {
         try {
-            System.out.println("🔹 Entrando al método transferirDinero");
-            System.out.println("🔹 Token recibido: " + token);
+            System.out.println("Token recibido: " + token);
 
-            // Buscar la cuenta de destino
             CuentaDTO cuentaDestino = cuentaClient.obtenerCuentaPorIdentificador(identificadorDestino, token);
             if (cuentaDestino == null) {
-                System.out.println("❌ Cuenta de destino no encontrada");
+                System.out.println("Cuenta de destino no encontrada");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ApiResponse("Cuenta de destino no encontrada", false, null));
             }
 
-            // Obtener la cuenta de origen
             CuentaDTO cuentaOrigen = cuentaClient.obtenerCuenta(id, token);
             if (cuentaOrigen == null) {
-                System.out.println("❌ Cuenta de origen no encontrada");
+                System.out.println("Cuenta de origen no encontrada");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ApiResponse("Cuenta de origen no encontrada", false, null));
             }
 
-            // Verificar saldo suficiente
             if (cuentaOrigen.getSaldoDisponible().compareTo(cantidad) < 0) {
-                System.out.println("❌ Saldo insuficiente");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ApiResponse("Saldo insuficiente", false, null));
+                return ResponseEntity.status(HttpStatus.GONE)
+                        .body(new ApiResponse("Fondos insuficientes", false, null));
             }
 
-            System.out.println("✅ Transferencia validada correctamente");
+            System.out.println("Transferencia validada correctamente");
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ApiResponse("Transferencia realizada con éxito", true, null));
 
         } catch (FeignException e) {
-            System.out.println("❌ Error en comunicación con otros servicios");
+            System.out.println("Error en comunicación con otros servicios");
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                     .body(new ApiResponse("Error en la comunicación con otros servicios", false, null));
         } catch (Exception e) {
-            System.out.println("❌ Error inesperado: " + e.getMessage());
+            System.out.println("Error inesperado: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse("Error al procesar la solicitud", false, null));
         }
