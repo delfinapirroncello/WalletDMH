@@ -1,6 +1,6 @@
 package com.microservices.cuenta_service.dto;
 
-import com.microservices.cuenta_service.TipoTransaccion;
+import com.microservices.cuenta_service.enums.TipoTransaccion;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Data;
