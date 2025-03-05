@@ -10,7 +10,6 @@ Digital Money House es una billetera virtual que permite a los usuarios registra
 - **Transferencias de dinero**: Permitir a los usuarios transferir dinero entre cuentas o a través de tarjetas de débito/crédito.
 - **Consulta de actividades y movimientos**: Los usuarios pueden consultar su historial de transacciones y actividades dentro de la billetera.
 - **Gestión de tarjetas**: Los usuarios pueden asociar y gestionar tarjetas de crédito y débito con su cuenta.
-- **Pruebas automatizadas**: Uso de RestAssured para realizar pruebas automatizadas de la API.
 
 ## Planificación y Actividades
 
@@ -39,7 +38,6 @@ Digital Money House es una billetera virtual que permite a los usuarios registra
 
 3. **Testing y calidad**:
    - Actualización y mantenimiento de casos de prueba.
-   - Automatización de pruebas utilizando RestAssured.
 
 ### Sprint III
 1. **Actividad y transacciones**:
@@ -51,7 +49,6 @@ Digital Money House es una billetera virtual que permite a los usuarios registra
 
 3. **Testing y calidad**:
    - Realización de pruebas exploratorias sobre nuevas funcionalidades.
-   - Actualización de las pruebas automatizadas con nuevos casos.
 
 ### Sprint IV
 1. **Transferencias de dinero**:
