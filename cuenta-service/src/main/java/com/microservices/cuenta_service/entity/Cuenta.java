@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@Builder
 @Data
 @Entity
 @Table(name = "cuenta", schema = "usuarios")
@@ -26,7 +25,6 @@ public class Cuenta {
     @Column(name = "telefono")
     private String telefono;
 
-    @Column(name = "saldoDisponible")
     private BigDecimal saldoDisponible;
 
     @Column(nullable = false)
@@ -125,11 +123,11 @@ public class Cuenta {
     }
 
     public void agregarTransaccion(Long transaccionId) {
-        this.transaccionIds.add(transaccionId); // Agrega el ID de la transacción
+        this.transaccionIds.add(transaccionId);
     }
 
     public void eliminarTransaccion(Long transaccionId) {
-        this.transaccionIds.remove(transaccionId); // Elimina el ID de la transacción
+        this.transaccionIds.remove(transaccionId);
     }
 
     public String getNombreYApellido() {

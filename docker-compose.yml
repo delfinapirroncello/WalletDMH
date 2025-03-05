@@ -1,0 +1,142 @@
+version: '3.8'
+
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD:
+      MYSQL_DATABASE: usuarios
+    ports:
+      - "3307:3306"
+    networks:
+      - digital-money-house
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  api-eureka:
+    build:
+      context: ./api-eureka
+    container_name: api-eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - digital-money-house
+
+  api-config:
+    build:
+      context: ./api-config
+      dockerfile: Dockerfile
+    container_name: api-config
+    ports:
+      - "8864:8864"
+    networks:
+      - digital-money-house
+    depends_on:
+      - api-eureka
+      - mysql-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/usuarios
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD:
+      SPRING_PROFILES_ACTIVE: native
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    networks:
+      - digital-money-house
+    depends_on:
+      - api-eureka
+      - api-config
+      - user-service
+      - cuenta-service
+      - transaccion-service
+      - api-tarjetas
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  user-service:
+    build:
+      context: ./user-service
+    container_name: user-service
+    ports:
+      - "8086:8086"
+    networks:
+      - digital-money-house
+    depends_on:
+      - mysql-db
+      - api-eureka
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/usuarios
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD:
+      SPRING_PROFILES_ACTIVE: docker
+
+  cuenta-service:
+    build:
+      context: ./cuenta-service
+    container_name: cuenta-service
+    ports:
+      - "8081:8081"
+    networks:
+      - digital-money-house
+    depends_on:
+      - mysql-db
+      - api-eureka
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/usuarios
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD:
+      SPRING_PROFILES_ACTIVE: docker
+
+  transaccion-service:
+    build:
+      context: ./transaccion-service
+    container_name: transaccion-service
+    ports:
+      - "8082:8082"
+    networks:
+      - digital-money-house
+    depends_on:
+      - mysql-db
+      - api-eureka
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/usuarios
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD:
+      SPRING_PROFILES_ACTIVE: docker
+
+  api-tarjetas:
+    build:
+      context: ./api-tarjetas
+    container_name: api-tarjetas
+    ports:
+      - "8083:8083"
+    networks:
+      - digital-money-house
+    depends_on:
+      - mysql-db
+      - api-eureka
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/usuarios
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD:
+      SPRING_PROFILES_ACTIVE: docker
+
+networks:
+  digital-money-house:
+    driver: bridge
+
+volumes:
+  mysql_data:

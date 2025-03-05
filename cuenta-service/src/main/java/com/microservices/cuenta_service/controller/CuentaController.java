@@ -151,9 +151,6 @@ public class CuentaController {
             @PathVariable String identificador,
             @RequestHeader(value = "Authorization", required = false) String token) {
 
-        System.out.println("🔹 Token recibido en cuenta-service: " + token);
-        System.out.println("🔹 Llegó la petición a cuenta-service");
-
         CuentaDTO cuenta = cuentaService.buscarPorAliasOCVU(identificador);
         return cuenta != null ? ResponseEntity.ok(cuenta) : ResponseEntity.notFound().build();
     }

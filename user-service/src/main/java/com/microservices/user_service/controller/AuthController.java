@@ -38,7 +38,7 @@ public class AuthController {
             response.put("token", token);
 
             return ResponseEntity.ok(new ApiResponse("Login exitoso", true, response));
-        } catch (RuntimeException e) { // Mejora: Usa excepciones personalizadas
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ApiResponse(e.getMessage(), false, null));
         } catch (Exception e) {
@@ -56,7 +56,7 @@ public class AuthController {
                     .body(new ApiResponse("Token inválido o ya expirado.", false, null));
         }
 
-        authService.logout(token); // Llamar a logout para revocar el token
+        authService.logout(token);
         return ResponseEntity.ok(new ApiResponse("Sesión cerrada correctamente.", true, null));
     }
 }
